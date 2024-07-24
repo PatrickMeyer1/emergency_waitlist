@@ -20,27 +20,30 @@ document.addEventListener('DOMContentLoaded', () => {
     adminSignInForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const username = document.getElementById('admin-username').value.trim();
-        const password = document.getElementById('admin-password').value.trim();
+        const admin_username = document.getElementById('admin-username').value.trim();
+        const admin_password = document.getElementById('admin-password').value.trim();
+        
 
-        if (username && password) {
+        if (admin_username && admin_password) {
             try {
                 const response = await fetch('admin_signin.php', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ admin_username, admin_password })
                 });
 
                 if (response.ok) {
+                    console.log(response);
                     const result = await response.json();
-                    if (result.status === 'Admin signed in successfully') {
+                    if (result.status === 'success') {
                         document.getElementById('sign-in-section').classList.add('hidden');
                         document.getElementById('admin-section').classList.remove('hidden');
                         fetchPatientList();
                     } else {
-                        alert(result.status);
+                        console.log(result.status);
+                        alert(result.message);
                     }
                 } else {
                     throw new Error('Failed to sign in');

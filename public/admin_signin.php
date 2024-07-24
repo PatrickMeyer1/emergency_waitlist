@@ -3,6 +3,9 @@ header('Content-Type: application/json');
 
 $input = json_decode(file_get_contents('php://input'), true);
 
+$admin_username = $input['admin_username'] ?? null;
+$admin_password = $input['admin_username'] ?? null;
+
 $servername = "localhost";
 $username = getenv('DB_USERNAME');
 $password = getenv('DB_PASSWORD');
@@ -15,24 +18,28 @@ if ($conn->connect_error) {
     exit;
 }
 
-$sql = "SELECT id, password FROM admins WHERE username = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$result = $stmt->get_result();
+// SQL query to select all admins and their passwords
+$sql = "SELECT username, password FROM admins";
 
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    if (password_verify($password, $row['password'])) {
-        $_SESSION['admin_id'] = $row['id'];
-        echo json_encode(['status' => 'Admin signed in successfully']);
-    } else {
-        echo json_encode(['status' => 'Invalid username or password']);
-    }
-} else {
-    echo json_encode(['status' => 'Invalid username or password']);
+// Execute the SQL query
+$result = $conn->query($sql);
+
+// Check if query was successful
+if ($result === false) {
+    echo json_encode(['status' => 'error', 'message' => 'Error: Query failed', 'error' => $conn->error]);
+    $conn->close();
+    exit;
 }
 
-$stmt->close();
+// Fetch all results and print them
+$admins = [];
+while ($row = $result->fetch_assoc()) {
+    $admins[] = $row;
+}
+
+// Output the result as JSON
+echo json_encode(['status' => 'success', 'admins' => $admins]);
+
+// Close the connection
 $conn->close();
 ?>

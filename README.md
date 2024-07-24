@@ -2,6 +2,8 @@
 [Database Schema](/db/schema.sql), and
 [Sample Data (SQL)](/db/seed.sql).
 
+Open command prompt
+
 Windows
 setx DB_USERNAME "your_username"
 setx DB_PASSWORD "your_password"
