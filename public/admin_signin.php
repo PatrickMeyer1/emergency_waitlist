@@ -8,7 +8,7 @@ $username = getenv('DB_USERNAME');
 $password = getenv('DB_PASSWORD');
 $dbname = "hospital_db";
 
-$conn = new mysqli($servername, $username_db, $password_db, $dbname);
+$conn = new mysqli($servername, $username, $password, $dbname);
 
 if ($conn->connect_error) {
     echo json_encode(['status' => 'Error: Connection failed', 'error' => $conn->connect_error]);
