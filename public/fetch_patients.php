@@ -2,8 +2,8 @@
 header('Content-Type: application/json');
 
 $servername = "localhost";
-$username = "root";
-$password = "uottawa!123";
+$username = getenv('DB_USERNAME');
+$password = getenv('DB_PASSWORD');
 $dbname = "hospital_db";
 
 $conn = new mysqli($servername, $username, $password, $dbname);
