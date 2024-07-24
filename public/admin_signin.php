@@ -10,10 +10,11 @@ if (empty($admin_username) || empty($admin_password)) {
     exit;
 }
 
-$servername = "localhost";
-$db_username = getenv('DB_USERNAME');
-$db_password = getenv('DB_PASSWORD');
-$dbname = "hospital_db";
+$config = include('config.php');
+$servername = $config['servername'];
+$db_username = $config['db_username'];
+$db_password = $config['db_password'];
+$dbname = $config['dbname'];
 
 $conn = new mysqli($servername, $db_username, $db_password, $dbname);
 
