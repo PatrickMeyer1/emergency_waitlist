@@ -6,8 +6,8 @@ $name = $input['name'];
 $code = strtoupper($input['code']);
 
 $servername = "localhost";
-$db_username = "root";
-$db_password = "uottawa!123";
+$db_username = getenv('DB_USERNAME');
+$db_password = getenv('DB_PASSWORD');
 $dbname = "hospital_db";
 
 $conn = new mysqli($servername, $db_username, $db_password, $dbname);

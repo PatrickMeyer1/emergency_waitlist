@@ -2,44 +2,44 @@
 header('Content-Type: application/json');
 
 $input = json_decode(file_get_contents('php://input'), true);
-
 $admin_username = $input['admin_username'] ?? null;
-$admin_password = $input['admin_username'] ?? null;
+$admin_password = $input['admin_password'] ?? null;
+
+if (empty($admin_username) || empty($admin_password)) {
+    echo json_encode(['status' => 'error', 'message' => 'Error: Missing username or password']);
+    exit;
+}
 
 $servername = "localhost";
-$username = getenv('DB_USERNAME');
-$password = getenv('DB_PASSWORD');
+$db_username = getenv('DB_USERNAME');
+$db_password = getenv('DB_PASSWORD');
 $dbname = "hospital_db";
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli($servername, $db_username, $db_password, $dbname);
 
 if ($conn->connect_error) {
-    echo json_encode(['status' => 'Error: Connection failed', 'error' => $conn->connect_error]);
+    echo json_encode(['status' => 'error', 'message' => 'Error: Connection failed', 'error' => $conn->connect_error]);
     exit;
 }
 
-// SQL query to select all admins and their passwords
-$sql = "SELECT username, password FROM admins";
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($input['action'] === 'adminSignIn') {
+        $sql = "SELECT * FROM admins WHERE username = ? AND password = ?";
 
-// Execute the SQL query
-$result = $conn->query($sql);
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ss", $admin_username, $admin_password);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-// Check if query was successful
-if ($result === false) {
-    echo json_encode(['status' => 'error', 'message' => 'Error: Query failed', 'error' => $conn->error]);
-    $conn->close();
-    exit;
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            echo json_encode(['status' => 'success', 'message' => 'Admin signed in successfully']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Invalid username or password']);
+        }
+    } else {
+    echo json_encode(['status' => 'Invalid action']);
+    }
 }
-
-// Fetch all results and print them
-$admins = [];
-while ($row = $result->fetch_assoc()) {
-    $admins[] = $row;
-}
-
-// Output the result as JSON
-echo json_encode(['status' => 'success', 'admins' => $admins]);
-
-// Close the connection
 $conn->close();
 ?>

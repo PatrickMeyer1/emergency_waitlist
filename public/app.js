@@ -17,37 +17,34 @@ document.addEventListener('DOMContentLoaded', () => {
         adminSignInForm.style.display = 'none';
     });
 
-    adminSignInForm.addEventListener('submit', async (e) => {
+    document.getElementById('admin-sign-in-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-
+    
         const admin_username = document.getElementById('admin-username').value.trim();
         const admin_password = document.getElementById('admin-password').value.trim();
-        
-
+    
         if (admin_username && admin_password) {
             try {
-                const response = await fetch('admin_signin.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
+                $.ajax({
+                    url: 'admin_signin.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ admin_username, admin_password, action: "adminSignIn" }),
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            document.getElementById('sign-in-section').classList.add('hidden');
+                            document.getElementById('admin-section').classList.remove('hidden');
+                            fetchPatientList();
+                        } else {
+                            alert(response.message || 'An error occurred. Please try again.');
+                        }
                     },
-                    body: JSON.stringify({ admin_username, admin_password })
-                });
-
-                if (response.ok) {
-                    console.log(response);
-                    const result = await response.json();
-                    if (result.status === 'success') {
-                        document.getElementById('sign-in-section').classList.add('hidden');
-                        document.getElementById('admin-section').classList.remove('hidden');
-                        fetchPatientList();
-                    } else {
-                        console.log(result.status);
-                        alert(result.message);
+                    error: function(xhr, status, error) {
+                        console.error('Error during sign-in:', error);
+                        alert('An error occurred. Please try again.');
                     }
-                } else {
-                    throw new Error('Failed to sign in');
-                }
+                });
             } catch (error) {
                 console.error('Error:', error);
                 alert('An error occurred. Please try again.');
@@ -142,6 +139,8 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('An error occurred. Please try again.');
         }
     });
+
+    window.onload()
 
     const fetchPatientList = async () => {
         try {
