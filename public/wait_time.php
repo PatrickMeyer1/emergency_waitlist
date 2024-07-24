@@ -34,8 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 $sql = "SELECT COUNT(*) * 10 AS total_wait_time
                         FROM patients
-                        WHERE severity > ? OR (severity = ? AND id < ?)
-                        AND status = 'waiting'";
+                        WHERE status = 'waiting' AND(severity > ? OR (severity = ? AND id < ?))";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("iii", $patient['severity'], $patient['severity'], $patient['id']);
                 $stmt->execute();
