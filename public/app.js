@@ -55,28 +55,55 @@ document.addEventListener('DOMContentLoaded', () => {
     userSignInForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        console.log("hi")
+
         const name = document.getElementById('user-name').value.trim();
         const code = document.getElementById('user-code').value.trim();
 
         if (name && code) {
             try {
-                const response = await fetch('check_wait_time.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
+                $.ajax({
+                    url: 'wait_time.php',
+                    type: 'POST',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ name, code, action: 'checkWaitTime' }),
+                    success: function(response) {
+                        if (response.waitTime) {
+                            waitTimeResult.textContent = `Approximate Wait Time: ${response.waitTime}`;
+                            waitTimeResult.style.display = 'block';
+                            document.getElementById('sign-in-section').classList.add('hidden');
+                            document.getElementById('user-section').classList.remove('hidden');
+                        } else {
+                            waitTimeResult.textContent = response.waitTime || 'An error occurred. Please try again.';
+                            waitTimeResult.style.display = 'block';
+                        }
                     },
-                    body: JSON.stringify({ name, code })
+                    error: function(xhr, status, error) {
+                        console.error('Error check wait time:', error);
+                        waitTimeResult.textContent = 'An error occurred. Please try again.';
+                        waitTimeResult.style.display = 'block';
+                    }
                 });
 
-                if (response.ok) {
-                    const result = await response.json();
-                    waitTimeResult.textContent = `Approximate Wait Time: ${result.waitTime}`;
-                    waitTimeResult.style.display = 'block';
-                    document.getElementById('sign-in-section').classList.add('hidden');
-                    document.getElementById('user-section').classList.remove('hidden');
-                } else {
-                    throw new Error('Failed to fetch wait time');
-                }
+
+                // const response = await fetch('check_wait_time.php', {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json'
+                //     },
+                //     body: JSON.stringify({ name, code })
+                // });
+
+                // if (response.ok) {
+                //     const result = await response.json();
+                //     waitTimeResult.textContent = `Approximate Wait Time: ${result.waitTime}`;
+                //     waitTimeResult.style.display = 'block';
+                //     document.getElementById('sign-in-section').classList.add('hidden');
+                //     document.getElementById('user-section').classList.remove('hidden');
+                // } else {
+                //     throw new Error('Failed to fetch wait time');
+                // }
             } catch (error) {
                 console.error('Error:', error);
                 waitTimeResult.textContent = 'An error occurred. Please try again.';
