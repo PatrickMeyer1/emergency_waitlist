@@ -7,12 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkWaitTimeForm = document.getElementById('check-wait-time-form');
     const waitTimeResult = document.getElementById('wait-time-result');
     const statusFilter = document.getElementById('status-filter');
-    const backButton = document.getElementById('back-button');
-    
-    backButton.addEventListener('click', () => {
-        window.history.back();
-    });
-
 
     statusFilter.addEventListener('change', () => {
         const selectedFilter = statusFilter.value;
