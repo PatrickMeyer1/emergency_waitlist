@@ -120,17 +120,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const severity = document.getElementById('patient-severity').value;
 
         try {
-            const response = await fetch('add_patient.php', {
+            const response = await fetch('create_patient.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ name, code, severity })
+                body: JSON.stringify({ name, code, severity , action: 'addPatient' })
             });
 
             if (response.ok) {
                 alert('Patient added successfully!');
-                fetchPatientList();
+                addPatientForm.reset(); 
             } else {
                 throw new Error('Failed to add patient');
             }
@@ -168,4 +168,37 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     fetchPatientList();
+
+    addPatientForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById('patient-name').value.trim();
+        const code = document.getElementById('patient-code').value.trim();
+        const severity = document.getElementById('patient-severity').value;
+
+        if (name && code && severity) {
+            try {
+                const response = await fetch('create_patient.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, code, severity })
+                });
+
+                if (response.ok) {
+                    alert('Patient added successfully!');
+                    addPatientForm.reset();
+                    fetchPatientList();
+                } else {
+                    throw new Error('Failed to add patient');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        } else {
+            alert('Please fill in all fields.');
+        }
+    });
 });
