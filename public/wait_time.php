@@ -20,7 +20,7 @@ if ($conn->connect_error) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($input['action'] === 'checkWaitTime') {
-        $check_sql = "SELECT status FROM patients WHERE name = ? AND code = ?";
+        $check_sql = "SELECT id, severity, status FROM patients WHERE name = ? AND code = ?";
         $check_stmt = $conn->prepare($check_sql);
         $check_stmt->bind_param("ss", $name, $code);
         $check_stmt->execute();
@@ -32,16 +32,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($patient['status'] === 'treated') {
                 echo json_encode(['waitTime' => 'Patient has already been treated']);
             } else {
-                $sql = "SELECT SUM(severity * 10) AS total_wait_time
+                $sql = "SELECT COUNT(*) * 10 AS total_wait_time
                         FROM patients
-                        WHERE status = 'waiting'";
+                        WHERE severity > ? OR (severity = ? AND id < ?)
+                        AND status = 'waiting'";
                 $stmt = $conn->prepare($sql);
+                $stmt->bind_param("iii", $patient['severity'], $patient['severity'], $patient['id']);
                 $stmt->execute();
                 $result = $stmt->get_result();
 
                 if ($result->num_rows > 0) {
                     $row = $result->fetch_assoc();
                     $total_wait_time = $row['total_wait_time'];
+                    error_log($total_wait_time);
                     echo json_encode(['waitTime' => $total_wait_time . ' minutes']);
                 } else {
                     echo json_encode(['waitTime' => 'No records found']);
