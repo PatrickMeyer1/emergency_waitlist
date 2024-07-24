@@ -1,0 +1,15 @@
+INSERT INTO admins(username, password) VALUES
+('admin1', 'adminpassword1'),
+('admin2', 'adminpassword2');
+
+INSERT INTO patients (name, code, severity, status, timestamp) VALUES
+('Alice Johnson', 'A01', 1, 'waiting', NOW()),
+('Bob Smith', 'B02', 2, 'waiting', NOW()),
+('Charlie Brown', 'C03', 3, 'treated', NOW()),
+('Diana Prince', 'D04', 4, 'waiting', NOW()),
+('Edward Norton', 'E05', 5, 'waiting', NOW()),
+('Fiona Green', 'F06', 3, 'treated', NOW()),
+('George King', 'G07', 2, 'waiting', NOW()),
+('Hannah Lee', 'H08', 4, 'treated', NOW()),
+('Ian Wright', 'I09', 1, 'waiting', NOW()),
+('Jenna Davis', 'J10', 5, 'waiting', NOW())

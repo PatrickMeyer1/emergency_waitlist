@@ -50,7 +50,10 @@ The Hospital Triage application is designed to streamline the management of emer
 
 ## How to Setup Local Database
 
-## User Interface States
+1. Go to MySQL and create a new MySQL connections, and name it hospital_db. Select localhost as hostname, your username and password
+2. Enter connetion and create a new schema, name it hospital_db, apply, apply
+3. Now execute the queries in [Database Schema](/db/schema.sql) to create the tables
+4.
 
 ## Database Documentation
 
