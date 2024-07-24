@@ -38,6 +38,12 @@
                     <input type="number" id="patient-severity" placeholder="Severity (1-5)" min="1" max="5" required>
                     <button type="submit">Add Patient</button>
                 </form>
+                <h2>Patients List</h2>
+                <select id="status-filter">
+                    <option value="all">All</option>
+                    <option value="waiting">Waiting</option>
+                    <option value="treated">Treated</option>
+                </select>
                 <table id="patient-list">
                     <thead>
                         <tr>
@@ -45,10 +51,10 @@
                             <th>Severity</th>
                             <th>Time in Queue</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </section>
             <section id="user-section" class="hidden">

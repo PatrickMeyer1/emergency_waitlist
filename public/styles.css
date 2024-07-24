@@ -83,3 +83,42 @@ th, td {
 th {
     background-color: #f2f2f2;
 }
+
+#filter-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+#filter-section label {
+    font-weight: bold;
+}
+
+#status-filter {
+    max-width: 200px;
+}
+
+#status-filter {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.treated-btn {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: center;
+}
+
+.treated-btn:hover {
+    background-color: #45a049;
+}

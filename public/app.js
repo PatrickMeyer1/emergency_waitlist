@@ -6,6 +6,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const addPatientForm = document.getElementById('add-patient-form');
     const checkWaitTimeForm = document.getElementById('check-wait-time-form');
     const waitTimeResult = document.getElementById('wait-time-result');
+    const statusFilter = document.getElementById('status-filter');
+    const backButton = document.getElementById('back-button');
+    
+    backButton.addEventListener('click', () => {
+        window.history.back();
+    });
+
+
+    statusFilter.addEventListener('change', () => {
+        const selectedFilter = statusFilter.value;
+        fetchPatientList(selectedFilter);
+    });
 
     adminSignInButton.addEventListener('click', () => {
         adminSignInForm.style.display = 'flex';
@@ -85,25 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         waitTimeResult.style.display = 'block';
                     }
                 });
-
-
-                // const response = await fetch('check_wait_time.php', {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json'
-                //     },
-                //     body: JSON.stringify({ name, code })
-                // });
-
-                // if (response.ok) {
-                //     const result = await response.json();
-                //     waitTimeResult.textContent = `Approximate Wait Time: ${result.waitTime}`;
-                //     waitTimeResult.style.display = 'block';
-                //     document.getElementById('sign-in-section').classList.add('hidden');
-                //     document.getElementById('user-section').classList.remove('hidden');
-                // } else {
-                //     throw new Error('Failed to fetch wait time');
-                // }
             } catch (error) {
                 console.error('Error:', error);
                 waitTimeResult.textContent = 'An error occurred. Please try again.';
@@ -140,32 +133,62 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    window.onload()
 
-    const fetchPatientList = async () => {
-        try {
-            const response = await fetch('fetch_patients.php');
-            if (response.ok) {
-                const patients = await response.json();
+    const fetchPatientList = (filter = 'all') => {
+        $.ajax({
+            url: 'fetch_patients.php',
+            type: 'GET',
+            dataType: 'json',
+            data: { filter: filter },
+            success: function(response) {
                 const patientListTableBody = document.querySelector('#patient-list tbody');
                 patientListTableBody.innerHTML = '';
-                patients.forEach(patient => {
+                
+                if (response.patients && response.patients.length > 0) {
+                    response.patients.forEach(patient => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${patient.name}</td>
+                            <td>${patient.severity}</td>
+                            <td>${patient.status === 'treated' ? '' : patient.time_in_queue}</td>
+                            <td>${patient.status}</td>
+                            <td>${patient.status === 'waiting' ? '<button class="treated-btn" data-id="' + patient.id + '">Treated</button>' : ''}</td>
+                        `;
+                        patientListTableBody.appendChild(row);
+                    });
+                } else {
                     const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${patient.name}</td>
-                        <td>${patient.severity}</td>
-                        <td>${patient.time_in_queue}</td>
-                        <td>${patient.status}</td>
-                    `;
+                    row.innerHTML = '<td colspan="5">No patients found</td>';
                     patientListTableBody.appendChild(row);
-                });
-            } else {
-                throw new Error('Failed to fetch patient list');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
+                }
 
-    fetchPatientList();
+                document.querySelectorAll('.treated-btn').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const patientId = button.getAttribute('data-id');
+                        $.ajax({
+                            url: 'update_status.php',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ id: patientId, status: 'treated' }),
+                            success: function(response) {
+                                if (response.status === 'success') {
+                                    fetchPatientList(statusFilter.value);
+                                } else {
+                                    alert(response.message || 'Failed to update status');
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error:', error);
+                                alert('An error occurred. Please try again.');
+                            }
+                        });
+                    });
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching patient list:', error);
+            }
+        });
+    };
+    
 });
