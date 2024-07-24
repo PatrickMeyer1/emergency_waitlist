@@ -185,4 +185,25 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Please fill in all fields.');
         }
     });
+
+    const adminBackButton = document.getElementById('admin-back-button');
+    const userBackButton = document.getElementById('user-back-button');
+    
+    adminBackButton.addEventListener('click', () => {
+        document.getElementById('admin-section').classList.add('hidden');
+        document.getElementById('sign-in-section').classList.remove('hidden');
+        
+        adminSignInForm.reset();
+    });
+
+    userBackButton.addEventListener('click', () => {
+        document.getElementById('user-section').classList.add('hidden');
+        document.getElementById('sign-in-section').classList.remove('hidden');
+        
+        userSignInForm.reset();
+        waitTimeResult.textContent = '';
+        waitTimeResult.style.display = 'none';
+    });
+
+
 });
